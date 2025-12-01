@@ -3,17 +3,39 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export default function ContactHome() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+  const [isNestHub, setIsNestHub] = useState(false);
+
+  useEffect(() => {
+    const checkLayout = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1280);
+      setIsNestHub(width === 1024 && height === 600);
+    };
+    checkLayout();
+    window.addEventListener("resize", checkLayout);
+    return () => window.removeEventListener("resize", checkLayout);
+  }, []);
 
   // Scroll Progress: 0 to 1 over the 250vh container
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
+
+  const { scrollYProgress: exitProgress } = useScroll({
+    target: containerRef,
+    offset: ["end end", "end start"],
+  });
+  const gradientY = useTransform(exitProgress, [0, 1], ["0vh", "100vh"]);
 
   // Smooth out the scroll progress for physics feel
   const smoothProgress = useSpring(scrollYProgress, {
@@ -26,28 +48,34 @@ export default function ContactHome() {
 
   // "SALTO" Movement
   // X: Starts left (-50vw), centers at 50% and stays
-  const x = useTransform(smoothProgress, [0, 0.5, 1], ["-50vw", "0vw", "0vw"]);
+  // Adjusted for mobile to start less far left to avoid overflow issues if any, 
+  // but mainly we want it to center correctly.
+  const xStart = isMobile ? "-100vw" : isTablet ? "-100vw" : "-50vw";
+  const x = useTransform(smoothProgress, [0, 0.4, 0.8], [xStart, "0vw", "0vw"]);
   
   // Y: Starts low (100vh), goes high (-15vh) at peak, lands at 0
-  const y = useTransform(smoothProgress, [0, 0.5, 1], ["100vh", "-15vh", "0vh"]);
+  const y = useTransform(smoothProgress, [0, 0.4, 0.8], ["100vh", "-15vh", "0vh"]);
   
   // Rotation: Slight tilt at the peak
-  const rotate = useTransform(smoothProgress, [0, 0.4, 0.6, 1], [0, -6, 6, 0]);
+  const rotate = useTransform(smoothProgress, [0, 0.3, 0.5, 0.8], [0, -6, 6, 0]);
   
   // Scale: Starts smaller, grows to peak, settles
-  const scale = useTransform(smoothProgress, [0, 0.5, 1], [0.5, 1.2, 1]);
+  // Mobile needs smaller scale
+  const scaleEnd = isMobile ? 0.8 : isTablet ? 0.7 : isNestHub ? 0.6 : 1;
+  const scalePeak = isMobile ? 1 : isTablet ? 0.9 : isNestHub ? 0.8 : 1.2;
+  const scale = useTransform(smoothProgress, [0, 0.4, 0.8], [0.5, scalePeak, scaleEnd]);
 
   // Opacity for "SALTO"
   const opacity = useTransform(smoothProgress, [0, 0.1], [0, 1]);
 
   // Intro Text Opacity/Position
-  const textY = useTransform(smoothProgress, [0, 1], ["-20vh", "0vh"]);
+  const textY = useTransform(smoothProgress, [0, 0.8], ["-20vh", "0vh"]);
   const textOpacity = useTransform(smoothProgress, [0, 0.2], [0, 1]);
 
   // Form Reveal (The Landing)
-  const formOpacity = useTransform(smoothProgress, [0.85, 1], [0, 1]);
-  const formScale = useTransform(smoothProgress, [0.85, 1], [0.8, 1]);
-  const formY = useTransform(smoothProgress, [0.85, 1], [50, 0]);
+  const formOpacity = useTransform(smoothProgress, [0.7, 0.85], [0, 1]);
+  const formScale = useTransform(smoothProgress, [0.7, 0.85], [0.8, 1]);
+  const formY = useTransform(smoothProgress, [0.7, 0.85], [50, 0]);
 
   // Background Speed Lines (Parallax)
   // Move opposite to the jump (Jump goes UP, lines go DOWN)
@@ -62,8 +90,9 @@ export default function ContactHome() {
   };
 
   return (
-    <div ref={containerRef} className="relative h-[250vh] bg-neutral-950">
+    <div ref={containerRef} className="relative h-[300vh] bg-neutral-950">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
+        <motion.div style={{ y: gradientY }} className={`absolute top-0 left-0 w-full ${isMobile ? "h-32" : "h-64"} bg-gradient-to-b from-neutral-950 via-neutral-950/90 to-transparent z-[60] pointer-events-none`} />
         
         {/* --- DYNAMIC BACKGROUND --- */}
         <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -84,7 +113,7 @@ export default function ContactHome() {
           {/* Static Phrase Part */}
           <motion.h2 
             style={{ y: textY, opacity: textOpacity }}
-            className="text-3xl md:text-5xl font-bold text-neutral-400 mb-4 md:mb-8"
+            className={`${isNestHub ? "text-2xl mb-2" : "text-3xl md:text-5xl mb-4 md:mb-8"} font-bold text-neutral-400`}
           >
             ¿Listo para el siguiente
           </motion.h2>
@@ -92,15 +121,15 @@ export default function ContactHome() {
           {/* THE JUMPING WORD */}
           <motion.div
             style={{ x, y, rotate, scale, opacity }}
-            className="relative mb-8 md:mb-12"
+            className={`relative ${isNestHub ? "mb-4" : "mb-8 md:mb-12"}`}
           >
-            <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400 font-display italic tracking-tighter leading-none filter drop-shadow-2xl pr-16 pb-4">
+            <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400 font-display italic tracking-tighter leading-none filter drop-shadow-2xl pr-8 md:pr-16 pb-4">
               SALTO?
             </h1>
             {/* Motion Blur Effect (Pseudo-element) */}
             <motion.div 
                style={{ opacity: useTransform(smoothProgress, [0.2, 0.5, 0.8], [0, 0.5, 0]) }}
-               className="absolute inset-0 text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] font-extrabold text-blue-500 blur-sm -z-10 font-display italic tracking-tighter leading-none pr-16 pb-4"
+               className="absolute inset-0 text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] font-extrabold text-blue-500 blur-sm -z-10 font-display italic tracking-tighter leading-none pr-8 md:pr-16 pb-4"
             >
               SALTO?
             </motion.div>

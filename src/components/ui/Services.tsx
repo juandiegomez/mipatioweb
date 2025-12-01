@@ -133,12 +133,14 @@ export default function Services() {
   const [isSmallHeight, setIsSmallHeight] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [isNestHub, setIsNestHub] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkLayout = () => {
       setIsSmallHeight(window.innerHeight < 750);
       setIsTablet(window.innerWidth < 1280);
       setIsNestHub(window.innerWidth === 1024 && window.innerHeight === 600);
+      setIsMobile(window.innerWidth < 768);
     };
     
     checkLayout();
@@ -150,6 +152,12 @@ export default function Services() {
     target: targetRef,
     offset: ["start start", "end end"],
   });
+
+  const { scrollYProgress: exitProgress } = useScroll({
+    target: targetRef,
+    offset: ["end end", "end start"],
+  });
+  const gradientY = useTransform(exitProgress, [0, 1], ["0vh", "100vh"]);
 
   // Desktop Horizontal Scroll
   const x = useTransform(scrollYProgress, [0, 1], ["1%", isTablet ? "-75%" : "-55%"]);
@@ -182,6 +190,7 @@ export default function Services() {
     >
       {/* --- MOBILE VIEW (Stacked Scroll Animation) --- */}
       <div className="sticky top-0 h-screen block md:hidden overflow-hidden bg-noise">
+        <motion.div style={{ y: gradientY }} className={`absolute top-0 left-0 w-full ${isMobile ? "h-32" : "h-64"} bg-gradient-to-b from-black via-black/90 to-transparent z-[60] pointer-events-none`} />
         <div className="relative w-full h-full flex flex-col items-center justify-center px-6">
           
           {/* Title (Always visible initially, gets covered) */}
@@ -290,6 +299,7 @@ export default function Services() {
 
       {/* --- DESKTOP VIEW (Horizontal Scroll Sticky) --- */}
       <div className="hidden md:block sticky top-0 h-screen overflow-hidden bg-noise">
+        <motion.div style={{ y: gradientY }} className={`absolute top-0 left-0 w-full ${isMobile ? "h-32" : "h-64"} bg-gradient-to-b from-black via-black/90 to-transparent z-[60] pointer-events-none`} />
         <div className="flex h-full items-center">
           <motion.div style={{ x }} className="flex items-center px-12">
             {/* Title Section */}

@@ -40,6 +40,13 @@ export default function AboutMe() {
     offset: ["start start", "end end"],
   });
 
+  const { scrollYProgress: exitProgress } = useScroll({
+    target: containerRef,
+    offset: ["end end", "end start"],
+  });
+
+  const gradientY = useTransform(exitProgress, [0, 1], ["0vh", "100vh"]);
+
   // --- Animations ---
   
   // 1. Image Movement
@@ -135,7 +142,7 @@ export default function AboutMe() {
 
 
         {/* --- Content Section (Right Side) --- */}
-        <div className={`absolute left-0 md:left-0 ${isNestHub ? 'lg:left-[38%]' : 'lg:left-[45%]'} top-[29%] md:top-0 h-[71%] md:h-full w-full md:w-full ${isNestHub ? 'lg:w-[60%]' : 'lg:w-[50%]'} flex flex-col justify-start md:justify-start lg:justify-center px-6 md:px-12 ${isNestHub ? 'lg:px-8' : 'lg:pl-24 lg:pr-6'} pt-0 md:pt-[38vh] lg:pt-0 ${isSmallHeight && isMobile ? 'top-[25%]' : ''}`}>
+        <div className={`absolute left-0 md:left-0 ${isNestHub ? 'lg:left-[38%]' : 'lg:left-[45%]'} top-[29%] md:top-0 h-[71%] md:h-full w-full md:w-full ${isNestHub ? 'lg:w-[60%]' : 'lg:w-[50%]'} flex flex-col justify-start md:justify-start lg:justify-center px-6 md:px-12 ${isNestHub ? 'lg:px-8' : 'lg:pl-24 lg:pr-6'} pt-0 md:pt-[38vh] lg:pt-0 ${isSmallHeight && isMobile ? 'top-[25%]' : ''} z-20`}>
             
             {/* Title Block */}
             <div className={`mb-4 md:mb-8 lg:mb-8 text-center md:text-center lg:text-left md:pl-0 lg:pl-0 ${isSmallHeight && isMobile ? 'mb-2' : ''} ${isNestHub ? 'lg:mb-4' : ''}`}>
@@ -199,6 +206,9 @@ export default function AboutMe() {
                 </Link>
             </motion.div>
         </div>
+
+        {/* Gradient Overlay - Placed last to ensure it's on top */}
+        <motion.div style={{ y: gradientY }} className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-neutral-50 via-neutral-50/90 to-transparent z-50 pointer-events-none" />
 
       </div>
     </section>

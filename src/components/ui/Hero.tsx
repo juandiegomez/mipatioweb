@@ -1,13 +1,25 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useRef } from "react";
 
 export default function Hero() {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: contentRef,
+    offset: ["start 120px", "start 40px"]
+  });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
-    <section className="min-h-screen bg-white flex flex-col justify-center items-center px-6 relative overflow-hidden">
-      <div className="max-w-5xl mx-auto text-center space-y-8 pt-20">
+    <section className="min-h-screen bg-white flex flex-col justify-center items-center px-6 relative">
+      <motion.div 
+        style={{ opacity }}
+        className="sticky top-0 w-full h-48 bg-gradient-to-b from-white via-white/90 to-transparent z-40 pointer-events-none -mb-48 shrink-0" 
+      />
+      <div ref={contentRef} className="max-w-5xl mx-auto text-center space-y-8 pt-20 relative z-10">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
