@@ -77,7 +77,7 @@ export default function Portfolio() {
 
   return (
     <section 
-      id="portafolio" 
+      id="portfolio" 
       className="bg-white py-24 relative cursor-default" 
       onMouseMove={handleMouseMove}
     >

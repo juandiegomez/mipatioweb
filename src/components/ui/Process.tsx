@@ -1,12 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 export default function Process() {
   const targetRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+  const [isSmallHeight, setIsSmallHeight] = useState(false);
+  const [isNestHub, setIsNestHub] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1024);
+      setIsSmallHeight(height < 700);
+      setIsNestHub(width >= 1024 && height <= 600);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end end"],
@@ -64,12 +83,13 @@ export default function Process() {
 
   return (
     <section
+      id="process"
       ref={targetRef}
       className="relative h-[300vh] text-white"
     >
-      <div className="sticky top-0 h-screen flex items-center overflow-hidden bg-noise">
+      <div className={`sticky top-0 h-screen flex items-center overflow-hidden bg-noise ${isMobile ? 'items-start pt-24' : isNestHub ? 'items-start pt-32' : ''}`}>
         <div className="w-full h-full flex items-center">
-          <div className="max-w-7xl mx-auto w-full px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className={`${isNestHub ? 'max-w-4xl' : 'max-w-7xl'} mx-auto w-full px-6 grid grid-cols-1 md:grid-cols-2 ${isSmallHeight ? 'gap-2' : 'gap-6'} md:gap-12 items-center`}>
             
             {/* --- Left Column: Steps --- */}
             <div className="relative pl-12">
@@ -82,33 +102,33 @@ export default function Process() {
                 className="absolute left-0 top-0 bottom-0 w-[2px] bg-white rounded-full"
               />
 
-              <div className="space-y-24 py-12">
+              <div className={`space-y-8 ${isNestHub ? 'md:space-y-10 py-4' : 'md:space-y-24 py-4 md:py-12'}`}>
                 {/* Step 1 */}
                 <motion.div style={{ opacity: opacity1, color: color1 }} className="transition-colors">
-                  <h3 className="text-4xl md:text-6xl font-bold font-display mb-4">
+                  <h3 className={`text-3xl ${isNestHub ? 'md:text-4xl' : 'md:text-6xl'} font-bold font-display mb-2 md:mb-4`}>
                     01. Idea
                   </h3>
-                  <p className="text-xl md:text-2xl font-light">
+                  <p className={`text-lg ${isNestHub ? 'md:text-xl' : 'md:text-2xl'} font-light`}>
                     ¿Tienes una idea? Hablemos.
                   </p>
                 </motion.div>
 
                 {/* Step 2 */}
                 <motion.div style={{ opacity: opacity2, color: color2 }} className="transition-colors">
-                  <h3 className="text-4xl md:text-6xl font-bold font-display mb-4">
+                  <h3 className={`text-3xl ${isNestHub ? 'md:text-4xl' : 'md:text-6xl'} font-bold font-display mb-2 md:mb-4`}>
                     02. Diseño
                   </h3>
-                  <p className="text-xl md:text-2xl font-light">
+                  <p className={`text-lg ${isNestHub ? 'md:text-xl' : 'md:text-2xl'} font-light`}>
                     Definir alcances y diseño.
                   </p>
                 </motion.div>
 
                 {/* Step 3 */}
                 <motion.div style={{ opacity: opacity3, color: color3 }} className="transition-colors">
-                  <h3 className="text-4xl md:text-6xl font-bold font-display mb-4">
+                  <h3 className={`text-3xl ${isNestHub ? 'md:text-4xl' : 'md:text-6xl'} font-bold font-display mb-2 md:mb-4`}>
                     03. Entrega
                   </h3>
-                  <p className="text-xl md:text-2xl font-light">
+                  <p className={`text-lg ${isNestHub ? 'md:text-xl' : 'md:text-2xl'} font-light`}>
                     Entrega de producto final.
                   </p>
                 </motion.div>
@@ -117,7 +137,12 @@ export default function Process() {
 
             {/* --- Right Column: Visual Object --- */}
             <div className="flex items-center justify-center h-full">
-              <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] flex items-center justify-center">
+              <div className={`relative flex items-center justify-center ${
+                isMobile ? 'w-[300px] h-[300px]' : 
+                isTablet ? 'w-[340px] h-[340px]' : 
+                isNestHub ? 'w-[280px] h-[280px]' :
+                'w-[400px] h-[400px]'
+              }`}>
                 {/* The Morphing Object */}
                 <motion.div
                   style={{
@@ -128,7 +153,12 @@ export default function Process() {
                     borderColor,
                     boxShadow
                   }}
-                  className="w-48 h-48 md:w-64 md:h-64 border-2 backdrop-blur-sm flex items-center justify-center overflow-hidden"
+                  className={`border-2 backdrop-blur-sm flex items-center justify-center overflow-hidden ${
+                    isMobile ? 'w-48 h-48' : 
+                    isTablet ? 'w-56 h-56' : 
+                    isNestHub ? 'w-44 h-44' :
+                    'w-64 h-64'
+                  }`}
                 >
                   {/* CTA inside the circle */}
                   <motion.div

@@ -55,7 +55,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="#contacto"
+            href="/contact"
             className="px-5 py-2 rounded-full border border-white text-sm font-medium hover:bg-white hover:text-black transition-colors"
           >
             Hablemos
@@ -90,7 +90,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="#contacto"
+              href="/contact"
               onClick={toggleMenu}
               className="mt-4 px-8 py-3 rounded-full border border-white text-lg font-medium hover:bg-white hover:text-black transition-colors"
             >
