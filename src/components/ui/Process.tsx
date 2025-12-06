@@ -31,6 +31,13 @@ export default function Process() {
     offset: ["start start", "end end"],
   });
 
+  const { scrollYProgress: exitProgress } = useScroll({
+    target: targetRef,
+    offset: ["end end", "end start"],
+  });
+
+  const gradientY = useTransform(exitProgress, [0, 1], ["0vh", "100vh"]);
+
   // --- Animations ---
 
   // Progress Bar
@@ -188,6 +195,7 @@ export default function Process() {
 
           </div>
         </div>
+        <motion.div style={{ y: gradientY }} className={`absolute top-0 left-0 w-full ${isMobile ? "h-32" : "h-64"} bg-gradient-to-b from-black via-black/90 to-transparent z-50 pointer-events-none`} />
       </div>
     </section>
   );
