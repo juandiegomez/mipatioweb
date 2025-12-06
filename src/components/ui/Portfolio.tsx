@@ -129,6 +129,7 @@ export default function Portfolio() {
       
       {/* --- MOBILE VIEW (Stacked Scroll Animation) --- */}
       <div className="md:hidden sticky top-0 h-screen overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white via-white/90 to-transparent z-50 pointer-events-none" />
         <div className="relative w-full h-full flex flex-col items-center justify-center px-6">
           
           {/* Title Layer */}
@@ -231,6 +232,7 @@ export default function Portfolio() {
 
       {/* --- DESKTOP VIEW (Horizontal Scroll) --- */}
       <div className="hidden md:flex sticky top-0 h-screen items-center overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white via-white/90 to-transparent z-50 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 w-full">
           <div className="mb-12">
             <h2 className="text-4xl md:text-6xl font-bold text-black mb-6 tracking-tight font-display">
